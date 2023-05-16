@@ -1,9 +1,34 @@
 import ComposableArchitecture
 import SwiftUI
+import NavigationStackBackport
 
 private let readMe = """
   This screen demonstrates how to use `NavigationStack` with Composable Architecture applications.
   """
+
+@main
+struct A: App {
+
+    let store = StoreOf<NavigationDemo>(
+        initialState: .init(path: StackState([NavigationDemo.Path.State.screenA(), NavigationDemo.Path.State.screenB()])),
+        reducer: { NavigationDemo() }
+    )
+
+    @State var isPresenting = false
+
+    var body: some Scene {
+        WindowGroup {
+            Button("Present", action: {
+                withAnimation {
+                    isPresenting = true
+                }
+            })
+                .sheet(isPresented: $isPresenting) {
+                    NavigationDemoView(store: store)
+                }
+        }
+    }
+}
 
 struct NavigationDemo: Reducer {
   struct State: Equatable {
@@ -89,7 +114,7 @@ struct NavigationDemoView: View {
   let store: StoreOf<NavigationDemo>
 
   var body: some View {
-    NavigationStackStore(
+    NavigationStackStoreBackPort(
       self.store.scope(state: \.path, action: NavigationDemo.Action.path)
     ) {
       Form {
@@ -139,9 +164,7 @@ struct NavigationDemoView: View {
         )
       }
     }
-    .safeAreaInset(edge: .bottom) {
-      FloatingMenuView(store: self.store)
-    }
+    .overlay(FloatingMenuView(store: self.store), alignment: .bottom)
     .navigationTitle("Navigation Stack")
   }
 }

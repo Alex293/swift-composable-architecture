@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "navigation-stack-backport",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lm/navigation-stack-backport",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7641abbba79be2cc2616413e7915d5f778784ecd"
+      }
+    },
+    {
       "identity" : "swift-argument-parser",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser",

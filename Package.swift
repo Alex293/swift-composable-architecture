@@ -5,9 +5,9 @@ import PackageDescription
 let package = Package(
   name: "swift-composable-architecture",
   platforms: [
-    .iOS(.v13),
+    .iOS(.v14),
     .macOS(.v10_15),
-    .tvOS(.v13),
+    .tvOS(.v14),
     .watchOS(.v6),
   ],
   products: [
@@ -27,6 +27,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "0.7.0"),
     .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "0.7.1"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "0.8.4"),
+    .package(url: "https://github.com/lm/navigation-stack-backport", branch: "main"),
   ],
   targets: [
     .target(
@@ -42,6 +43,7 @@ let package = Package(
         // TODO: should we depend on this or copy some stuff over?
         .product(name: "SwiftUINavigation", package: "swiftui-navigation"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
+        .product(name: "NavigationStackBackport", package: "navigation-stack-backport"),
       ]
     ),
     .testTarget(
