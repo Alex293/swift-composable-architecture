@@ -9,24 +9,31 @@ private let readMe = """
 @main
 struct A: App {
 
+    var body: some Scene {
+        WindowGroup {
+            DemoWrapper()
+        }
+    }
+}
+
+struct DemoWrapper: View {
+
     let store = StoreOf<NavigationDemo>(
-        initialState: .init(path: StackState([NavigationDemo.Path.State.screenA(), NavigationDemo.Path.State.screenB()])),
+        initialState: .init(path: StackState([NavigationDemo.Path.State.screenA(), NavigationDemo.Path.State.screenB(), NavigationDemo.Path.State.screenC()])),
         reducer: { NavigationDemo() }
     )
 
     @State var isPresenting = false
 
-    var body: some Scene {
-        WindowGroup {
-            Button("Present", action: {
-                withAnimation {
-                    isPresenting = true
-                }
-            })
-                .sheet(isPresented: $isPresenting) {
-                    NavigationDemoView(store: store)
-                }
-        }
+    var body: some View {
+        Button("Present", action: {
+            withAnimation {
+                isPresenting = true
+            }
+        })
+            .sheet(isPresented: $isPresenting) {
+                NavigationDemoView(store: store)
+            }
     }
 }
 
@@ -494,6 +501,7 @@ struct ScreenCView: View {
 
 struct NavigationStack_Previews: PreviewProvider {
   static var previews: some View {
+  DemoWrapper()
     NavigationDemoView(
       store: Store(
         initialState: NavigationDemo.State(
