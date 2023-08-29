@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "swift-composable-architecture",
   platforms: [
-    .iOS(.v13),
+    .iOS(.v14),
     .macOS(.v10_15),
     .tvOS(.v13),
     .watchOS(.v6),
@@ -28,6 +28,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-identified-collections", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "1.0.0"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.0.0"),
+    .package(url: "https://github.com/lm/navigation-stack-backport", from: "1.0.0"),
   ],
   targets: [
     .target(
@@ -42,6 +43,7 @@ let package = Package(
         .product(name: "OrderedCollections", package: "swift-collections"),
         .product(name: "SwiftUINavigationCore", package: "swiftui-navigation"),
         .product(name: "XCTestDynamicOverlay", package: "xctest-dynamic-overlay"),
+        .product(name: "NavigationStackBackport", package: "navigation-stack-backport"),
       ]
     ),
     .testTarget(

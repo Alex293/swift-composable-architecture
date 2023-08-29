@@ -1,4 +1,5 @@
 @_spi(Reflection) import CasePaths
+import NavigationStackBackport
 import SwiftUI
 
 extension View {
@@ -75,5 +76,72 @@ private struct NavigationDestinationID: Hashable {
   init<Value>(_ value: Value) {
     self.objectIdentifier = ObjectIdentifier(Value.self)
     self.enumTag = EnumMetadata(Value.self)?.tag(of: value)
+  }
+}
+
+extension View {
+  /// Associates a destination view with a store that can be used to push the view onto a
+  /// `NavigationStack`.
+  ///
+  /// > This is a Composable Architecture-friendly version of SwiftUI's
+  /// > `navigationDestination(isPresented:)` view modifier.
+  ///
+  /// - Parameters:
+  ///   - store: A store that is focused on ``PresentationState`` and ``PresentationAction`` for
+  ///     a screen. When `store`'s state is non-`nil`, the system passes a store of unwrapped
+  ///     `State` and `Action` to the modifier's closure. You use this store to power the content
+  ///     in a view that the system pushes onto the navigation stack. If `store`'s state is
+  ///     `nil`-ed out, the system pops the view from the stack.
+  ///   - destination: A closure returning the content of the destination view.
+  @available(iOS 14, *)
+  public func navigationDestinationBP<State, Action, Destination: View>(
+    store: Store<PresentationState<State>, PresentationAction<Action>>,
+    @ViewBuilder destination: @escaping (_ store: Store<State, Action>) -> Destination
+  ) -> some View {
+    self.navigationDestinationBP(
+      store: store,
+      state: { $0 },
+      action: { $0 },
+      destination: destination
+    )
+  }
+
+  /// Associates a destination view with a store that can be used to push the view onto a
+  /// `NavigationStack`.
+  ///
+  /// > This is a Composable Architecture-friendly version of SwiftUI's
+  /// > `navigationDestination(isPresented:)` view modifier.
+  ///
+  /// - Parameters:
+  ///   - store: A store that is focused on ``PresentationState`` and ``PresentationAction`` for
+  ///     a screen. When `store`'s state is non-`nil`, the system passes a store of unwrapped
+  ///     `State` and `Action` to the modifier's closure. You use this store to power the content
+  ///     in a view that the system pushes onto the navigation stack. If `store`'s state is
+  ///     `nil`-ed out, the system pops the view from the stack.
+  ///   - toDestinationState: A transformation to extract screen state from the presentation
+  ///     state.
+  ///   - fromDestinationAction: A transformation to embed screen actions into the presentation
+  ///     action.
+  ///   - destination: A closure returning the content of the destination view.
+  @available(iOS 14, *)
+  public func navigationDestinationBP<
+    State, Action, DestinationState, DestinationAction, Destination: View
+  >(
+    store: Store<PresentationState<State>, PresentationAction<Action>>,
+    state toDestinationState: @escaping (_ state: State) -> DestinationState?,
+    action fromDestinationAction: @escaping (_ destinationAction: DestinationAction) -> Action,
+    @ViewBuilder destination: @escaping (_ store: Store<DestinationState, DestinationAction>) ->
+      Destination
+  ) -> some View {
+    self.presentation(
+      store: store,
+      state: toDestinationState,
+      id: { $0.wrappedValue.map(NavigationDestinationID.init) },
+      action: fromDestinationAction
+    ) { `self`, $item, destinationContent in
+      self.backport.navigationDestination(isPresented: $item.isPresent()) {
+        destinationContent(destination)
+      }
+    }
   }
 }
