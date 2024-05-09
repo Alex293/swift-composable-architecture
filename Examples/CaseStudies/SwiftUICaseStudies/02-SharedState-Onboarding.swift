@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import NavigationStackBackport
 import SwiftUI
 
 private let readMe = """
@@ -62,20 +63,20 @@ private struct SignUpFeature {
 }
 
 struct SignUpFlow: View {
-  @Bindable private var store = Store(
+  @Perception.Bindable private var store = Store(
     initialState: SignUpFeature.State(signUpData: Shared(SignUpData()))
   ) {
     SignUpFeature()
   }
 
   var body: some View {
-    NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+    NavigationStackBackport.NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
       Form {
         Section {
           Text(readMe)
         }
         Section {
-          NavigationLink(
+          NavigationStackBackport.NavigationLink(
             "Sign up",
             state: SignUpFeature.Path.State.basics(
               BasicsFeature.State(signUpData: store.$signUpData)
@@ -116,7 +117,7 @@ private struct BasicsFeature {
 
 private struct BasicsStep: View {
   @Environment(\.dismiss) private var dismiss
-  @Bindable var store: StoreOf<BasicsFeature>
+  @Perception.Bindable var store: StoreOf<BasicsFeature>
 
   var body: some View {
     Form {
@@ -136,7 +137,7 @@ private struct BasicsStep: View {
             dismiss()
           }
         } else {
-          NavigationLink(
+          NavigationStackBackport.NavigationLink(
             state: SignUpFeature.Path.State.personalInfo(
               PersonalInfoFeature.State(signUpData: store.$signUpData)
             )
@@ -167,7 +168,7 @@ private struct PersonalInfoFeature {
 
 private struct PersonalInfoStep: View {
   @Environment(\.dismiss) private var dismiss
-  @Bindable var store: StoreOf<PersonalInfoFeature>
+  @Perception.Bindable var store: StoreOf<PersonalInfoFeature>
 
   var body: some View {
     Form {
@@ -185,7 +186,7 @@ private struct PersonalInfoStep: View {
             dismiss()
           }
         } else {
-          NavigationLink(
+          NavigationStackBackport.NavigationLink(
             "Next",
             state: SignUpFeature.Path.State.topics(
               TopicsFeature.State(topics: store.$signUpData.topics)
@@ -251,7 +252,7 @@ private struct TopicsFeature {
 }
 
 private struct TopicsStep: View {
-  @Bindable var store: StoreOf<TopicsFeature>
+  @Perception.Bindable var store: StoreOf<TopicsFeature>
 
   var body: some View {
     Form {
@@ -349,7 +350,7 @@ private struct SummaryFeature {
 }
 
 private struct SummaryStep: View {
-  @Bindable var store: StoreOf<SummaryFeature>
+  @Perception.Bindable var store: StoreOf<SummaryFeature>
 
   var body: some View {
     Form {
@@ -409,26 +410,26 @@ private struct SummaryStep: View {
     .sheet(
       item: $store.scope(state: \.destination?.basics, action: \.destination.basics)
     ) { basicsStore in
-      NavigationStack {
+      NavigationStackBackport.NavigationStack {
         BasicsStep(store: basicsStore)
       }
-      .presentationDetents([.medium])
+      //            .presentationDetents([.medium])
     }
     .sheet(
       item: $store.scope(state: \.destination?.personalInfo, action: \.destination.personalInfo)
     ) { personalStore in
-      NavigationStack {
+      NavigationStackBackport.NavigationStack {
         PersonalInfoStep(store: personalStore)
       }
-      .presentationDetents([.medium])
+      //            .presentationDetents([.medium])
     }
     .sheet(
       item: $store.scope(state: \.destination?.topics, action: \.destination.topics)
     ) { topicsStore in
-      NavigationStack {
+      NavigationStackBackport.NavigationStack {
         TopicsStep(store: topicsStore)
       }
-      .presentationDetents([.medium])
+      //            .presentationDetents([.medium])
     }
     .alert($store.scope(state: \.destination?.alert, action: \.destination.alert))
   }
@@ -439,7 +440,7 @@ private struct SummaryStep: View {
 }
 
 #Preview("Basics") {
-  NavigationStack {
+  NavigationStackBackport.NavigationStack {
     BasicsStep(
       store: Store(initialState: BasicsFeature.State(signUpData: Shared(SignUpData()))) {
         BasicsFeature()
@@ -449,7 +450,7 @@ private struct SummaryStep: View {
 }
 
 #Preview("Personal info") {
-  NavigationStack {
+  NavigationStackBackport.NavigationStack {
     PersonalInfoStep(
       store: Store(initialState: PersonalInfoFeature.State(signUpData: Shared(SignUpData()))) {
         PersonalInfoFeature()
@@ -459,7 +460,7 @@ private struct SummaryStep: View {
 }
 
 #Preview("Topics") {
-  NavigationStack {
+  NavigationStackBackport.NavigationStack {
     TopicsStep(
       store: Store(initialState: TopicsFeature.State(topics: Shared([]))) {
         TopicsFeature()
@@ -469,7 +470,7 @@ private struct SummaryStep: View {
 }
 
 #Preview("Summary") {
-  NavigationStack {
+  NavigationStackBackport.NavigationStack {
     SummaryStep(
       store: Store(
         initialState: SummaryFeature.State(
