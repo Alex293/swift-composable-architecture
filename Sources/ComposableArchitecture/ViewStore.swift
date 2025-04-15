@@ -629,6 +629,7 @@ private struct HashableWrapper<Value>: Hashable {
   func hash(into hasher: inout Hasher) {}
 }
 
-enum BindingLocal {
-  @TaskLocal static var isActive = false
+@_spi(Internals)
+public enum BindingLocal {
+  @TaskLocal public static var isActive = false
 }

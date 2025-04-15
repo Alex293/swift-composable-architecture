@@ -1,8 +1,9 @@
 import Combine
 import Foundation
 
+@_spi(Internals)
 @MainActor
-protocol Core<State, Action>: AnyObject, Sendable {
+public protocol Core<State, Action>: AnyObject, Sendable {
   associatedtype State
   associatedtype Action
   var state: State { get }
@@ -241,13 +242,14 @@ final class ScopedCore<Base: Core, State, Action>: Core {
   }
 }
 
-final class IfLetCore<Base: Core, State, Action>: Core {
-  let base: Base
-  var cachedState: State
-  let stateKeyPath: KeyPath<Base.State, State?>
-  let actionKeyPath: CaseKeyPath<Base.Action, Action>
-  var parentCancellable: AnyCancellable?
-  init(
+@_spi(Internals)
+public final class IfLetCore<Base: Core, State, Action>: Core {
+  public let base: Base
+  public var cachedState: State
+  public let stateKeyPath: KeyPath<Base.State, State?>
+  public let actionKeyPath: CaseKeyPath<Base.Action, Action>
+  public var parentCancellable: AnyCancellable?
+  public init(
     base: Base,
     cachedState: State,
     stateKeyPath: KeyPath<Base.State, State?>,
@@ -260,14 +262,14 @@ final class IfLetCore<Base: Core, State, Action>: Core {
   }
   @inlinable
   @inline(__always)
-  var state: State {
+  public var state: State {
     let state = base.state[keyPath: stateKeyPath] ?? cachedState
     cachedState = state
     return state
   }
   @inlinable
   @inline(__always)
-  func send(_ action: Action) -> Task<Void, Never>? {
+  public func send(_ action: Action) -> Task<Void, Never>? {
     if BindingLocal.isActive && isInvalid {
       return nil
     }
@@ -275,22 +277,22 @@ final class IfLetCore<Base: Core, State, Action>: Core {
   }
   @inlinable
   @inline(__always)
-  var canStoreCacheChildren: Bool {
+  public var canStoreCacheChildren: Bool {
     base.canStoreCacheChildren
   }
   @inlinable
   @inline(__always)
-  var didSet: CurrentValueRelay<Void> {
+  public var didSet: CurrentValueRelay<Void> {
     base.didSet
   }
   @inlinable
   @inline(__always)
-  var isInvalid: Bool {
+  public var isInvalid: Bool {
     base.state[keyPath: stateKeyPath] == nil || base.isInvalid
   }
   @inlinable
   @inline(__always)
-  var effectCancellables: [UUID: AnyCancellable] {
+  public var effectCancellables: [UUID: AnyCancellable] {
     base.effectCancellables
   }
 }

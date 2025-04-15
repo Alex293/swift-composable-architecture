@@ -1,8 +1,9 @@
 import Combine
 import Foundation
 
-final class CurrentValueRelay<Output>: Publisher, @unchecked Sendable {
-  typealias Failure = Never
+@_spi(Internals)
+public final class CurrentValueRelay<Output>: Publisher, @unchecked Sendable {
+  public typealias Failure = Never
 
   private var currentValue: Output
   private let lock: os_unfair_lock_t
@@ -24,7 +25,7 @@ final class CurrentValueRelay<Output>: Publisher, @unchecked Sendable {
     self.lock.deallocate()
   }
 
-  func receive(subscriber: some Subscriber<Output, Never>) {
+  public func receive(subscriber: some Subscriber<Output, Never>) {
     let subscription = Subscription(upstream: self, downstream: subscriber)
     self.lock.sync {
       self.subscriptions.append(subscription)

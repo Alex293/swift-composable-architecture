@@ -150,7 +150,7 @@ import SwiftUI
 public final class Store<State, Action> {
   var children: [ScopeID<State, Action>: AnyObject] = [:]
 
-  let core: any Core<State, Action>
+  @_spi(Internals) public let core: any Core<State, Action>
   @_spi(Internals) public var effectCancellables: [UUID: AnyCancellable] { core.effectCancellables }
 
   #if !os(visionOS)
@@ -310,7 +310,8 @@ public final class Store<State, Action> {
     return scope(id: id(state: state, action: action), childCore: open(core))
   }
 
-  func scope<ChildState, ChildAction>(
+  @_spi(Internals)
+  public func scope<ChildState, ChildAction>(
     id: ScopeID<State, Action>?,
     childCore: @autoclosure () -> any Core<ChildState, ChildAction>
   ) -> Store<ChildState, ChildAction> {
